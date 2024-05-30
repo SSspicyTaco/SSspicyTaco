@@ -151,12 +151,19 @@
     </header>
     
     <main>
-        <section id="home">
+        <section id="login">
+            <h2>Login</h2>
+            <label for="username">Username:</label>
+            <input type="text" id="username">
+            <button class="button" onclick="login()">Login</button>
+        </section>
+
+        <section id="home" class="hidden">
             <h1>Welcome to SSspicyTaco's Esports Coaching and Blog</h1>
             <p>Your one-stop destination for professional coaching.</p>
         </section>
 
-        <section id="about">
+        <section id="about" class="hidden">
             <h2>About Us</h2>
             <p>We are a team of experienced Rainbow Six Siege players dedicated to helping you improve your game.</p>
             <p>Make sure to follow us on our social media platforms:</p>
@@ -164,7 +171,7 @@
             <button class="button" onclick="window.open('https://www.youtube.com/channel/UCI0oO0_xmwFOuDSck3zsdLQ', '_blank')">Follow on YouTube</button>
         </section>
 
-        <section id="services">
+        <section id="services" class="hidden">
             <h2>Coaching Services</h2>
             <div>
                 <h3>Rocket League</h3>
@@ -177,22 +184,22 @@
             </div>
         </section>
 
-        <section id="blog">
+        <section id="blog" class="hidden">
             <h2>Blog</h2>
             <p>Explore our articles, guides, and video tutorials to enhance your skills and strategies.</p>
         </section>
 
-        <section id="contact">
+        <section id="contact" class="hidden">
             <h2>Contact Us</h2>
             <p>Have questions? Reach out to us via our contact form or on social media.</p>
         </section>
 
-        <section id="faq">
+        <section id="faq" class="hidden">
             <h2>FAQ</h2>
             <p>Find answers to commonly asked questions about our coaching services.</p>
         </section>
 
-        <section id="rocket-league-trainer">
+        <section id="rocket-league-trainer" class="hidden">
             <h2>Rocket League Trainer</h2>
             <p>Manage your Rocket League training and track your progress.</p>
             
@@ -248,7 +255,7 @@
             </div>
         </section>
 
-        <section id="r6-trainer">
+        <section id="r6-trainer" class="hidden">
             <h2>R6 Trainer</h2>
             <p>Manage your Rainbow Six Siege training and track your progress.</p>
             
@@ -318,6 +325,7 @@
     <script>
         let points = 0;
         let r6Points = 0;
+        let currentUser = null;
 
         function showSection(sectionId) {
             // Hide all sections
@@ -340,10 +348,12 @@
 
         function updatePoints() {
             document.getElementById('points').innerText = points;
+            saveData();
         }
 
         function updateR6Points() {
             document.getElementById('r6Points').innerText = r6Points;
+            saveData();
         }
 
         function addPracticePoints() {
@@ -476,11 +486,42 @@
             }
         }
 
-        // Show the home section by default
+        function login() {
+            const username = document.getElementById('username').value;
+            if (username) {
+                currentUser = username;
+                document.getElementById('login').classList.add('hidden');
+                loadUserData();
+                showSection('home');
+            } else {
+                alert('Please enter a username.');
+            }
+        }
+
+        function saveData() {
+            if (currentUser) {
+                const data = {
+                    points,
+                    r6Points
+                };
+                localStorage.setItem(currentUser, JSON.stringify(data));
+            }
+        }
+
+        function loadUserData() {
+            const data = localStorage.getItem(currentUser);
+            if (data) {
+                const parsedData = JSON.parse(data);
+                points = parsedData.points || 0;
+                r6Points = parsedData.r6Points || 0;
+                updatePoints();
+                updateR6Points();
+            }
+        }
+
+        // Show the login section by default
         document.addEventListener('DOMContentLoaded', () => {
-            showSection('home');
-            updatePoints();
-            updateR6Points();
+            showSection('login');
         });
     </script>
 </body>
