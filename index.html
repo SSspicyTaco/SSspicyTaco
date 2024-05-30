@@ -146,24 +146,19 @@
                 <li><a href="#faq" onclick="showSection('faq')">FAQ</a></li>
                 <li><a href="#rocket-league-trainer" onclick="showSection('rocket-league-trainer')">Rocket League Trainer</a></li>
                 <li><a href="#r6-trainer" onclick="showSection('r6-trainer')">R6 Trainer</a></li>
+                <li><a href="#register" onclick="showSection('register')">Register</a></li>
+                <li><a href="#login" onclick="showSection('login')">Login</a></li>
             </ul>
         </nav>
     </header>
     
     <main>
-        <section id="login">
-            <h2>Login</h2>
-            <label for="username">Username:</label>
-            <input type="text" id="username">
-            <button class="button" onclick="login()">Login</button>
-        </section>
-
-        <section id="home" class="hidden">
+        <section id="home">
             <h1>Welcome to SSspicyTaco's Esports Coaching and Blog</h1>
             <p>Your one-stop destination for professional coaching.</p>
         </section>
 
-        <section id="about" class="hidden">
+        <section id="about">
             <h2>About Us</h2>
             <p>We are a team of experienced Rainbow Six Siege players dedicated to helping you improve your game.</p>
             <p>Make sure to follow us on our social media platforms:</p>
@@ -171,7 +166,7 @@
             <button class="button" onclick="window.open('https://www.youtube.com/channel/UCI0oO0_xmwFOuDSck3zsdLQ', '_blank')">Follow on YouTube</button>
         </section>
 
-        <section id="services" class="hidden">
+        <section id="services">
             <h2>Coaching Services</h2>
             <div>
                 <h3>Rocket League</h3>
@@ -184,22 +179,22 @@
             </div>
         </section>
 
-        <section id="blog" class="hidden">
+        <section id="blog">
             <h2>Blog</h2>
             <p>Explore our articles, guides, and video tutorials to enhance your skills and strategies.</p>
         </section>
 
-        <section id="contact" class="hidden">
+        <section id="contact">
             <h2>Contact Us</h2>
             <p>Have questions? Reach out to us via our contact form or on social media.</p>
         </section>
 
-        <section id="faq" class="hidden">
+        <section id="faq">
             <h2>FAQ</h2>
             <p>Find answers to commonly asked questions about our coaching services.</p>
         </section>
 
-        <section id="rocket-league-trainer" class="hidden">
+        <section id="rocket-league-trainer">
             <h2>Rocket League Trainer</h2>
             <p>Manage your Rocket League training and track your progress.</p>
             
@@ -255,7 +250,7 @@
             </div>
         </section>
 
-        <section id="r6-trainer" class="hidden">
+        <section id="r6-trainer">
             <h2>R6 Trainer</h2>
             <p>Manage your Rainbow Six Siege training and track your progress.</p>
             
@@ -315,6 +310,24 @@
             <div>
                 <h3>Current Points: <span id="r6Points">0</span></h3>
             </div>
+        </section>
+
+        <section id="register" class="hidden">
+            <h2>Register</h2>
+            <label for="registerUsername">Username:</label>
+            <input type="text" id="registerUsername">
+            <label for="registerPassword">Password:</label>
+            <input type="password" id="registerPassword">
+            <button class="button" onclick="register()">Register</button>
+        </section>
+
+        <section id="login" class="hidden">
+            <h2>Login</h2>
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername">
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword">
+            <button class="button" onclick="login()">Login</button>
         </section>
     </main>
 
@@ -486,21 +499,53 @@
             }
         }
 
-        function login() {
-            const username = document.getElementById('username').value;
-            if (username) {
-                currentUser = username;
-                document.getElementById('login').classList.add('hidden');
-                loadUserData();
-                showSection('home');
+        function register() {
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            if (username && password) {
+                if (localStorage.getItem(username)) {
+                    alert('Username already exists. Please choose a different username.');
+                } else {
+                    const userData = {
+                        password,
+                        points: 0,
+                        r6Points: 0
+                    };
+                    localStorage.setItem(username, JSON.stringify(userData));
+                    alert('Registration successful! You can now log in.');
+                    showSection('login');
+                }
             } else {
-                alert('Please enter a username.');
+                alert('Please enter both a username and password.');
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const userData = localStorage.getItem(username);
+            if (userData) {
+                const parsedData = JSON.parse(userData);
+                if (parsedData.password === password) {
+                    currentUser = username;
+                    points = parsedData.points;
+                    r6Points = parsedData.r6Points;
+                    document.getElementById('login').classList.add('hidden');
+                    showSection('home');
+                    updatePoints();
+                    updateR6Points();
+                } else {
+                    alert('Incorrect password. Please try again.');
+                }
+            } else {
+                alert('Username not found. Please register first.');
             }
         }
 
         function saveData() {
             if (currentUser) {
                 const data = {
+                    password: JSON.parse(localStorage.getItem(currentUser)).password,
                     points,
                     r6Points
                 };
@@ -508,20 +553,9 @@
             }
         }
 
-        function loadUserData() {
-            const data = localStorage.getItem(currentUser);
-            if (data) {
-                const parsedData = JSON.parse(data);
-                points = parsedData.points || 0;
-                r6Points = parsedData.r6Points || 0;
-                updatePoints();
-                updateR6Points();
-            }
-        }
-
-        // Show the login section by default
+        // Show the home section by default
         document.addEventListener('DOMContentLoaded', () => {
-            showSection('login');
+            showSection('home');
         });
     </script>
 </body>
