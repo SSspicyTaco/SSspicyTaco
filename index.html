@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocket League Trainer</title>
+    <title>Esports Trainer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -250,7 +250,64 @@
 
         <section id="r6-trainer">
             <h2>R6 Trainer</h2>
-            <p>Details about Rainbow Six Siege training.</p>
+            <p>Manage your Rainbow Six Siege training and track your progress.</p>
+            
+            <div>
+                <h3>Track Your Practice</h3>
+                <label for="r6PracticeMinutes">Minutes Practiced:</label>
+                <input type="number" id="r6PracticeMinutes" min="0">
+                <button class="button" onclick="addR6PracticePoints()">Add Practice Points</button>
+            </div>
+
+            <div>
+                <h3>Map Learning</h3>
+                <label for="mapLearningMinutes">Minutes Practiced:</label>
+                <input type="number" id="mapLearningMinutes" min="0">
+                <button class="button" onclick="addMapLearningPoints()">Add Map Learning Points</button>
+            </div>
+
+            <div>
+                <h3>Practice vs AI</h3>
+                <label for="aiPracticeMinutes">Minutes Practiced:</label>
+                <input type="number" id="aiPracticeMinutes" min="0">
+                <label for="aiDifficulty">Difficulty:</label>
+                <select id="aiDifficulty">
+                    <option value="casual">Casual</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+                <button class="button" onclick="addAiPracticePoints()">Add AI Practice Points</button>
+            </div>
+
+            <div>
+                <h3>Casual Game</h3>
+                <label for="r6CasualScore">Game Score:</label>
+                <input type="number" id="r6CasualScore" min="0">
+                <label for="r6CasualResult">Result:</label>
+                <select id="r6CasualResult">
+                    <option value="win">Win</option>
+                    <option value="lose">Lose</option>
+                </select>
+                <button class="button" onclick="addR6CasualGamePoints()">Add Casual Game Points</button>
+            </div>
+
+            <div>
+                <h3>Ranked Game</h3>
+                <button class="button" onclick="startR6RankedGame()">Start Ranked Game (-1000 points)</button>
+                <div id="r6RankedGameSection" class="hidden">
+                    <label for="r6RankedScore">Game Score:</label>
+                    <input type="number" id="r6RankedScore" min="0">
+                    <label for="r6RankedResult">Result:</label>
+                    <select id="r6RankedResult">
+                        <option value="win">Win</option>
+                        <option value="lose">Lose</option>
+                    </select>
+                    <button class="button" onclick="addR6RankedGamePoints()">Add Ranked Game Points</button>
+                </div>
+            </div>
+
+            <div>
+                <h3>Current Points: <span id="r6Points">0</span></h3>
+            </div>
         </section>
     </main>
 
@@ -260,6 +317,7 @@
     
     <script>
         let points = 0;
+        let r6Points = 0;
 
         function showSection(sectionId) {
             // Hide all sections
@@ -282,6 +340,10 @@
 
         function updatePoints() {
             document.getElementById('points').innerText = points;
+        }
+
+        function updateR6Points() {
+            document.getElementById('r6Points').innerText = r6Points;
         }
 
         function addPracticePoints() {
@@ -350,10 +412,75 @@
             navUl.style.display = navUl.style.display === 'block' ? 'none' : 'block';
         }
 
+        function addR6PracticePoints() {
+            const minutes = parseInt(document.getElementById('r6PracticeMinutes').value);
+            if (!isNaN(minutes) && minutes > 0) {
+                r6Points += Math.floor((1000 / 33) * minutes);
+                updateR6Points();
+            }
+        }
+
+        function addMapLearningPoints() {
+            const minutes = parseInt(document.getElementById('mapLearningMinutes').value);
+            if (!isNaN(minutes) && minutes > 0) {
+                r6Points += Math.floor((1000 / 25) * minutes);
+                updateR6Points();
+            }
+        }
+
+        function addAiPracticePoints() {
+            const minutes = parseInt(document.getElementById('aiPracticeMinutes').value);
+            const difficulty = document.getElementById('aiDifficulty').value;
+            if (!isNaN(minutes) && minutes > 0) {
+                if (difficulty === 'advanced') {
+                    r6Points += Math.floor((1000 / 25) * minutes);
+                } else {
+                    r6Points += Math.floor((1000 / 33) * minutes);
+                }
+                updateR6Points();
+            }
+        }
+
+        function addR6CasualGamePoints() {
+            const score = parseInt(document.getElementById('r6CasualScore').value);
+            const result = document.getElementById('r6CasualResult').value;
+            if (!isNaN(score) && score > 0) {
+                r6Points += Math.floor(score / 2);
+                if (result === 'win') {
+                    r6Points += 250;
+                }
+                updateR6Points();
+            }
+        }
+
+        function startR6RankedGame() {
+            if (r6Points >= 1000) {
+                r6Points -= 1000;
+                updateR6Points();
+                document.getElementById('r6RankedGameSection').classList.remove('hidden');
+            } else {
+                alert('Sorry, you do not have enough points! Go practice!');
+            }
+        }
+
+        function addR6RankedGamePoints() {
+            const score = parseInt(document.getElementById('r6RankedScore').value);
+            const result = document.getElementById('r6RankedResult').value;
+            if (!isNaN(score) && score > 0) {
+                r6Points += Math.floor(score / 2);
+                if (result === 'win') {
+                    r6Points += 250;
+                }
+                updateR6Points();
+                document.getElementById('r6RankedGameSection').classList.add('hidden');
+            }
+        }
+
         // Show the home section by default
         document.addEventListener('DOMContentLoaded', () => {
             showSection('home');
             updatePoints();
+            updateR6Points();
         });
     </script>
 </body>
